@@ -12,8 +12,11 @@
 
         function renderPage(pdf, pageNum) {
             pdf.getPage(pageNum).then(function(page) {
-                var scale = 2;  // Increase scale for better quality
+                // Calculate the scale to fit the page width to the viewport
+                var viewportWidth = document.documentElement.clientWidth; // Width of the viewport
+                var scale = viewportWidth / page.getViewport({ scale: 1 }).width;
                 var viewport = page.getViewport({ scale: scale });
+
                 var canvas = document.createElement('canvas');
                 var context = canvas.getContext('2d');
 
@@ -48,6 +51,6 @@
     </script>
 </head>
 <body>
-    <div id="viewer" style="width: 100%; height: 100%;"></div>
+    <div id="viewer" style="width: 100%; height: auto; overflow-x: auto;"></div>
 </body>
 </html>
