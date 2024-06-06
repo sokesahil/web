@@ -3,21 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menu</title>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
+    <title>Menu PDF Viewer</title>
+    <link rel="stylesheet" href="../pdfjs/web/viewer.css">
+    <script type="module">
+        import * as pdfjsLib from '../pdfjs/build/pdf.mjs';
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = '../pdfjs/build/pdf.worker.mjs';
+
+        function renderPage(pdf, pageNum) {
+            pdf.getPage(pageNum).then(function(page) {
+                var scale = 2;  // Increase scale for better quality
+                var viewport = page.getViewport({ scale: scale });
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+
+                // Adjust for high DPI screens
+                var outputScale = window.devicePixelRatio || 1;
+                var sWidth = Math.floor(viewport.width * outputScale);
+                var sHeight = Math.floor(viewport.height * outputScale);
+                canvas.width = sWidth;
+                canvas.height = sHeight;
+                canvas.style.width = viewport.width + "px";
+                canvas.style.height = viewport.height + "px";
+
+                context.scale(outputScale, outputScale);
+
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                page.render(renderContext).promise.then(function() {
+                    document.getElementById('viewer').appendChild(canvas);
+                    if (pageNum < pdf.numPages) {
+                        renderPage(pdf, pageNum + 1);  // Render the next page
+                    }
+                });
+            });
         }
-        embed {
-            width: 100%;
-            height: 100%;
-        }
-    </style>
+
+        pdfjsLib.getDocument('../menu.pdf').promise.then(function(pdfDoc) {
+            renderPage(pdfDoc, 1);  // Start rendering from the first page
+        });
+    </script>
 </head>
 <body>
-    <embed src="../menu.pdf" type="application/pdf">
+    <div id="viewer" style="width: 100%; height: 100%;"></div>
 </body>
 </html>
