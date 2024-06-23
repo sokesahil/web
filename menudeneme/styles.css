@@ -1,0 +1,109 @@
+body {
+    font-family: 'Noto Serif', serif;
+    background-color: #fafafa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    z-index: 1000;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 20px;
+}
+
+.logo {
+    width: 100px;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.tabs-container {
+    display: flex;
+    overflow-x: auto;
+}
+
+.menu-container {
+    margin-top: 140px; /* Make space for fixed header */
+}
+
+.tab {
+    padding: 10px 20px;
+    margin-right: 10px;
+    background-color: #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+}
+
+.tab:hover {
+    background-color: #c4c4c4;
+}
+
+.tab.active {
+    background-color: #8B4513;
+    color: white;
+}
+
+.category-title {
+    margin-top: 40px;
+    font-size: 1.8em;
+    color: #333;
+    padding-top: 20px; /* Space for smooth scrolling */
+    border-bottom: 2px solid #8B4513;
+    padding-bottom: 10px;
+}
+
+.item-tile {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 20px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.item-tile:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.item-name {
+    font-size: 1.1em; /* Adjusted for mobile */
+    font-weight: 700;
+    color: #333;
+}
+
+.item-category {
+    font-size: 0.9em;
+    color: #888;
+}
+
+.item-price {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #8B4513;
+    white-space: nowrap; /* Ensure price stays on one line */
+    margin-left: 20px; /* Add some spacing from the item details */
+}
