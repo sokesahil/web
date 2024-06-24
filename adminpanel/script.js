@@ -3,6 +3,7 @@ const API_URL = 'https://sokesahil-express.vercel.app';
 document.addEventListener('DOMContentLoaded', () => {
     loadItems();
     loadCategories();
+    loadPassKey();
     
     document.getElementById('searchInput').addEventListener('input', filterItems);
     document.getElementById('itemForm').addEventListener('submit', saveItem);
@@ -97,6 +98,8 @@ async function saveItem(event) {
     const itemName = document.getElementById('itemName').value;
     const itemCategory = document.getElementById('itemCategory').value === 'new' ? document.getElementById('newCategory').value : document.getElementById('itemCategory').value;
     const itemPrice = document.getElementById('itemPrice').value;
+    const passKey = document.getElementById('passKey').value;
+    const rememberDevice = document.getElementById('rememberDevice').checked;
 
     const item = {
         item: itemName,
@@ -110,7 +113,8 @@ async function saveItem(event) {
             response = await fetch(`${API_URL}/items/${itemId}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-pass-key': passKey
                 },
                 body: JSON.stringify(item)
             });
@@ -118,23 +122,34 @@ async function saveItem(event) {
             response = await fetch(`${API_URL}/items`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'x-pass-key': passKey
                 },
                 body: JSON.stringify(item)
             });
         }
 
         if (!response.ok) {
-            throw new Error('Ürün kaydedilemedi');
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Ürün kaydedilemedi');
         }
 
+        if (rememberDevice) {
+            setCookie('passKey', passKey, 30); // Remember for 30 days
+            setCookie('rememberDevice', 'true', 30);
+        } else {
+            setCookie('passKey', '', -1); // Clear the cookie
+            setCookie('rememberDevice', '', -1);
+        }
+
+        displayMessage('Ürün başarıyla kaydedildi', 'success');
         loadItems();
         loadCategories();
-        document.getElementById('itemForm').reset();
+        // Do not reset the form here to preserve the pass key
         document.getElementById('itemId').value = '';
         toggleNewCategoryInput(); // Reset new category input visibility
     } catch (error) {
-        console.error('Ürün kaydedilirken hata oluştu:', error);
+        displayMessage(error.message, 'error');
     }
 }
 
@@ -153,19 +168,62 @@ function editItem(id, name, category, price) {
 }
 
 async function confirmDeleteItem(id) {
+    const passKey = document.getElementById('passKey').value;
     if (confirm('Bu ürünü silmek istediğinize emin misiniz?')) {
         try {
             const response = await fetch(`${API_URL}/items/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: {
+                    'x-pass-key': passKey
+                }
             });
 
             if (!response.ok) {
-                throw new Error('Ürün silinemedi');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Ürün silinemedi');
             }
 
+            displayMessage('Ürün başarıyla silindi', 'success');
             loadItems();
         } catch (error) {
-            console.error('Ürün silinirken hata oluştu:', error);
+            displayMessage(error.message, 'error');
         }
     }
+}
+
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days*24*60*60*1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function loadPassKey() {
+    const passKey = getCookie('passKey');
+    const rememberDevice = getCookie('rememberDevice') === 'true';
+    if (passKey) {
+        document.getElementById('passKey').value = passKey;
+    }
+    document.getElementById('rememberDevice').checked = rememberDevice;
+}
+
+function displayMessage(message, type) {
+    const messageDiv = document.getElementById('message');
+    messageDiv.textContent = message;
+    messageDiv.className = `message ${type}`;
+    messageDiv.style.display = 'block';
+    setTimeout(() => {
+        messageDiv.style.display = 'none';
+    }, 5000);
 }
