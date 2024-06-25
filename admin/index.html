@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Yönetim Paneli</h1>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Ürün ara...">
+        </div>
+        <div class="items-list" id="itemsList"></div>
+        <div class="add-item">
+            <h2>Ürün Ekle / Güncelle</h2>
+            <div id="message" class="message"></div>
+            <form id="itemForm">
+                <input type="hidden" id="itemId">
+                <div class="form-group">
+                    <label for="itemName">Ürün Adı</label>
+                    <input type="text" id="itemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="itemCategory">Kategori</label>
+                    <select id="itemCategory" required>
+                        <option value="" disabled selected>Bir kategori seçin</option>
+                    </select>
+                    <input type="text" id="newCategory" placeholder="Yeni kategori" style="display:none;">
+                </div>
+                <div class="form-group">
+                    <label for="itemPrice">Fiyat</label>
+                    <input type="number" id="itemPrice" required>
+                </div>
+                <div class="form-group">
+                    <label for="passKey">Yönetici Şifresi</label>
+                    <input type="password" id="passKey" required>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="rememberDevice">
+                    <label for="rememberDevice">Yönetici şifresini bu cihaz için kaydet.</label>
+                </div>
+                <button type="submit">Ürünü Kaydet</button>
+            </form>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
